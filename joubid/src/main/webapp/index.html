@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>WEB SOCKY SOCKY</title>
+	
+	<script type="text/javascript">
+
+		window.onload = function(){
+
+			var status = document.getElementById('status'); 
+			var messages = document.getElementById('messages'); 
+			var submitForm = document.getElementById('submitForm'); 
+			var message = document.getElementById('message'); 
+			var close = document.getElementById('close'); 
+			var connect = document.getElementById('connect'); 
+
+			var wsocket = new WebSocket('ws://localhost:8180/joubid/hello');
+
+			wsocket.onopen = function() {
+				status.innerHTML = 'connected to server.';
+				console.log('connected');
+			}
+
+			wsocket.onerror = function(err) {
+				console.log('error: ' + err);
+			}
+
+			wsocket.onmessage = function(evt){
+
+				messages.innerHTML += '<li>' + evt.data + '</li>';
+			}
+
+			wsocket.onclose = function(){
+
+				status.innerHTML = 'Closed';
+			}
+
+			submitForm.onsubmit = function(){
+
+				var text = message.value;
+				wsocket.send(text);
+				messages.innerHTML += '<li>Sent: '+ text +'</li>';
+				message.value = '';
+			}
+
+			close.onclick = function(){
+
+				wsocket.close();
+			}
+
+
+			connect.onclick = function(){
+
+				location.reload();
+			}
+		}
+
+	</script>
+</head>
+
+<body>
+
+	<div id="status">Connecting ... </div>
+	<ul id="messages"></ul>
+	
+	<form id="submitForm" action="#">
+	
+		<textarea id="message"></textarea>
+		<input type="submit" value="send" />
+		
+	</form>
+		<button id="close" >close</button>
+		<button id="connect" >connect</button>
+
+</body>
+
+</html>
